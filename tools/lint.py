@@ -23,3 +23,15 @@ class Entry:
     @property
     def cve(self) -> str:
         return self.frontmatter.get("cve", "")
+
+
+def parse_frontmatter(path: Path) -> dict | None:
+    """从 markdown 文件头解析 YAML frontmatter；没有则返回 None。"""
+    text = path.read_text(encoding="utf-8")
+    if not text.startswith("---\n"):
+        return None
+    end = text.find("\n---\n", 4)
+    if end == -1:
+        return None
+    block = text[4:end]
+    return yaml.safe_load(block) or {}
